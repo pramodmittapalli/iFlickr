@@ -1,6 +1,9 @@
 function iFlickr() {
     this.config = {};
-    this.url    = 'http://api.flickr.com/services/rest/';
+    this.url = {
+        api: 'http://api.flickr.com/services/rest/',
+        upload: 'http://api.flickr.com/services/upload/'
+    };
 
     /*
      * @param       config(object)
@@ -12,6 +15,7 @@ function iFlickr() {
         config.format       = 'json';
         config.jsoncallback = 'Ext.util.JSONP.callback';
         this.config         = config;
+        this.upload('TOKEN', 'IMAGE-DATA')
     }
 
     /*
@@ -56,7 +60,7 @@ function iFlickr() {
         }, query);
 
         Ext.util.JSONP.request({
-            url: this.url,
+            url: this.url.api,
             params: params,
             callback: callback
         });
@@ -129,11 +133,49 @@ function iFlickr() {
 
     /*
      * @param       auth_token(string)
+     * @param       image(raw jfif data)
      * @return      Void
-     * @description Returns the credentials attached to an authentication token.
-     *              This call must be signed as specified in the authentication API spec.
+     * @description It works outside the normal Flickr API framework because it involves sending binary files over the wire.
+     *              Uploading apps can call the flickr.people.getUploadStatus method in the regular API to obtain file and bandwidth limits for the user.
+     *              References:
+     *                  - http://www.flickr.com/services/api/upload.example.html
+     *                  - http://code.google.com/apis/desktop/articles/e9.html#scenario2
      */
-    this.auth_checkToken = function(auth_token)
+    this.upload = function(auth_token, image)
     {
+        var sign,
+            br,
+            boundry,
+            ajax,
+            disp;
+
+        sign     = "-----------------------------7d44e178b0434";
+        br      = "\r\n";
+        disp    = 'Content-Disposition: form-data; name="{X}"';
+        boundry = sign + br +
+                  disp.replace('{X}', 'api_key') + br + br +
+                  flickr.config.api_key + br +
+                  sign + br +
+                  disp.replace('{X}', 'auth_token') + br + br +
+                  auth_token + br +
+                  sign + br +
+                  disp.replace('{X}', 'api_sig') + br + br +
+                  this.sign({api_key: flickr.config.api_key, auth_token: auth_token}) + br +
+                  sign + br +
+                  disp.replace('{X}', 'photo') + '; filename="iPhone.jpg"' + br +
+                  "Content-Type: image/jpeg" + br + br +
+                  image + br + sign + '--';
+
+        ajax = new XMLHttpRequest();
+        ajax.open("POST", this.url.upload, true);
+        ajax.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+        ajax.onreadystatechange = function() {
+            if (ajax.readyState == 4 && ajax.status == 200)
+            {
+                console.log(ajax.responseText);
+            }
+        };
+        ajax.send(postContent);
+
     }
 }
