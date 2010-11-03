@@ -27,9 +27,9 @@ camera = new Ext.Panel({
                 disabled: true,
                 handler: function(){
                     navigator.camera.getPicture(function(image){
-                        //"data:image/jpeg;base64," + image;
+                        flickr.upload(session, image);
                     }, function(msg){
-                        //msg
+                        alert('Error!');
                     }, { quality: 50 });
                 }
             }),

@@ -63,18 +63,17 @@ Ext.setup({
                 afterrender: function()
                 {
                     db.executeQuery("CREATE TABLE IF NOT EXISTS settings (parameter varchar(8),contains text);", [], function(t, r){
-                        db.executeQuery("SELECT contains FROM settings WHERE parameter = 'frob';", [], function(t, r){
+                        db.executeQuery("SELECT contains FROM settings WHERE parameter = 'session';", [], function(t, r){
                             if (r.rows.length > 0)
-                                flickr.auth_getToken(r.rows.item(0).contains, function(response){
+                            {
+                                session = r.rows.item(0).contains;
+                                flickr.auth_checkToken(session, function(response){
                                     if (response.stat == 'ok')
-                                    {
                                         Ext.getCmp('take-photo').enable();
-                                    }
                                     else
-                                    {
                                         mainContainer.setCard(1);
-                                    }
                                 });
+                            }
                             else
                                 mainContainer.setCard(1);
                         });

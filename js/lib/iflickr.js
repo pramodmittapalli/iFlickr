@@ -15,7 +15,6 @@ function iFlickr() {
         config.format       = 'json';
         config.jsoncallback = 'Ext.util.JSONP.callback';
         this.config         = config;
-        this.upload('TOKEN', 'IMAGE-DATA')
     }
 
     /*
@@ -101,7 +100,7 @@ function iFlickr() {
                 });
 
                 document.getElementById('flickr-browser').innerHTML = '<iframe src="' + login_url + '" style="display:none;"></iframe>';
-                //window.open(login_url, 'go-to-flickr-and-authorize');
+                //console.log(login_url);
             }
             // TODO: what if there is a problem
         });
@@ -129,6 +128,18 @@ function iFlickr() {
     this.auth_getToken = function(frob, callback)
     {
         this.request({method: 'flickr.auth.getToken', frob: frob}, callback);
+    }
+
+    /*
+     * @param       auth_token(string)
+     * @param       callback(function)
+     * @return      Void
+     * @description Returns the credentials attached to an authentication token.
+     *              This call must be signed as specified in the authentication API spec.
+     */
+    this.auth_checkToken = function(auth_token, callback)
+    {
+        this.request({method: 'flickr.auth.checkToken', auth_token: auth_token}, callback);
     }
 
     /*
@@ -169,13 +180,13 @@ function iFlickr() {
         ajax = new XMLHttpRequest();
         ajax.open("POST", this.url.upload, true);
         ajax.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
-        ajax.onreadystatechange = function() {
+        ajax.onreadystatechange = function()
+        {
             if (ajax.readyState == 4 && ajax.status == 200)
             {
-                console.log(ajax.responseText);
+                alert(ajax.responseText);
             }
-        };
+        }
         ajax.send(postContent);
-
     }
 }

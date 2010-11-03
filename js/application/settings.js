@@ -63,9 +63,14 @@ settings = new Ext.form.FormPanel({
                             flickr.auth_getToken(r.rows.item(0).contains, function(response){
                                 if (response.stat == 'ok')
                                 {
+                                    session = response.auth.token._content;
                                     Ext.getCmp('authorization-end').disable();
                                     Ext.getCmp('take-photo').enable();
-                                    mainContainer.setCard(0);
+                                    db.executeQuery("DELETE FROM settings WHERE parameter = 'session';", [], function(){
+                                        db.executeQuery("INSERT INTO settings (parameter, contains) VALUES ('session', '" + session + "');", [], function(){
+                                            mainContainer.setCard(0);
+                                        });
+                                    });
                                 }
                                 else
                                 {

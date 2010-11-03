@@ -15,8 +15,8 @@ db.connect('iFlickrDB');
 
 flickr = new iFlickr();
 flickr.init({
-    api_key   : 'd8a2f33b9100814f276afae3b8374072',
-    secret    : 'a9ca03187c819923',
+    api_key   : 'b40a536c14884b229f84da4cc07524bc',
+    secret    : 'd4515700598ed31e',
     permission: 'write'
 });
 
