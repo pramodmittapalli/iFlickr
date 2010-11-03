@@ -25,10 +25,9 @@ camera = new Ext.Panel({
                 ui: 'action',
                 text: 'Take a Photo',
                 disabled: true,
-                handler: function(){
-                    alert("Clicked!");
+                handler: function()
+                {
                     navigator.camera.getPicture(function(image){
-                        alert("Captured!");
                         flickr.upload(session, image);
                     }, function(msg){
                         alert('Error!');
